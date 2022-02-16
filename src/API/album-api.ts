@@ -19,5 +19,3 @@ export const albumAPI = {
         return instance.get<AlbumApiType[]>('photos')
     },
 }
-
-

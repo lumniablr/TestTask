@@ -1,16 +1,22 @@
 import React from "react";
 import {albumAPI, AlbumApiType} from '../API/album-api'
+import './renderPhoto.css'
 
-type RenderPhotoP = {
+type RenderPhotoPropsType = {
     filteredById: AlbumApiType[],
     currentPhotos: AlbumApiType[],
-    handleModalData: (url: string) => void,
+    handleModalData: (url: string, id: number) => void,
     deletePhotoItem: (id: number) => void,
-    selectedValue: number,
-
+    selectedValue: number | string,
 }
 
-function RenderPhoto({filteredById, currentPhotos, handleModalData, deletePhotoItem, selectedValue}: RenderPhotoP) {
+function RenderPhoto({
+                         filteredById,
+                         currentPhotos,
+                         handleModalData,
+                         deletePhotoItem,
+                         selectedValue
+                     }: RenderPhotoPropsType) {
 
     const currentData =
         currentPhotos.map((p) =>
@@ -18,7 +24,7 @@ function RenderPhoto({filteredById, currentPhotos, handleModalData, deletePhotoI
                 <div className="content">
                     <img
                         src={p.thumbnailUrl}
-                        onClick={() => handleModalData(p.url)}
+                        onClick={() => handleModalData(p.url, p.id)}
                     />
                     <p>
                         {p.title}
@@ -35,9 +41,9 @@ function RenderPhoto({filteredById, currentPhotos, handleModalData, deletePhotoI
     return (
         <>
             {
-                filteredById.length === 0 && selectedValue === 0
-                    ? <h3>Выберите альбом, который хотите увидеть </h3>
-                    : currentData
+                filteredById.length !== 0
+                    ? currentData
+                    : <h3>Вы удалили все фото из этого альбома</h3>
 
             }
 

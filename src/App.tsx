@@ -5,22 +5,19 @@ import {Pagination, SelectChangeEvent} from "@mui/material";
 import Modal from "./Modal/Modal";
 import AlbumSelect from "./Select/AlbumSelect";
 import RenderPhoto from "./RenderPhoto/RenderPhoto";
+import CustomPagination from "./CustomPagination/CustomPagination"
 
 
 function App() {
 
     const [initialPhotos, setInitialPhotos] = useState<AlbumApiType[]>([])
-    console.log(initialPhotos, 'initial photos')
     //const [loading, setLoading] = useState<boolean>(false)
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [photoURL, setPhotoURL] = useState<string>()
-    const [selectedValue, setSelectedValue] = useState<number>(0)
-    console.log(selectedValue)
+    const [selectedValue, setSelectedValue] = useState<number | string>(0)
     const [albumId, setAlbumId] = useState<number[]>([])
-    console.log(albumId, 'albumId')
     const [filteredById, setFilteredById] = useState<AlbumApiType[]>([])
-    console.log(filteredById, 'filtered by id')
+    const [currentItem, setCurrentItem] = useState<AlbumApiType | undefined>({} as AlbumApiType)
 
     const PER_PAGE = 5;
     const paginateCounter = filteredById.length > 0
@@ -44,17 +41,26 @@ function App() {
             .then((res) => {
                     setInitialPhotos(res.data)
                     uniqueAlbumID(res.data)
+                    setSelectedValue(res.data[0].albumId)
                 }
             )
         //setLoading(false)
     }, [])
 
+    useEffect(() => {
+        if (selectedValue === 'ALL') {
+            setFilteredById(initialPhotos)
+        } else {
+            setFilteredById(initialPhotos.filter((d) => d.albumId === selectedValue))
+        }
+    }, [selectedValue])
+
     const handleChangePageNumber = (e: React.ChangeEvent<unknown>, p: number) => {
         setCurrentPage(p)
     }
 
-    const handleModalData = (url: string) => {
-        setPhotoURL(url)
+    const openModal = (url: string, id: number) => {
+        setCurrentItem(initialPhotos.find(i => i.id === id))
         setIsOpen(true)
     }
 
@@ -66,40 +72,39 @@ function App() {
     }
 
     const handleChangeAlbumId = (event: SelectChangeEvent) => {
-        const albumID = +event.target.value
+        const albumID = event.target.value
         setSelectedValue(albumID)
         let filteredAlbumID =
-            albumID === 999999 //знаю, что так делать нельзя, что в дате может ид альбома таким же, на это есть свои причины
+            albumID === 'ALL'
                 ? initialPhotos
-                : initialPhotos.filter((p) => p.albumId === albumID)
+                : initialPhotos.filter((p) => p.albumId === Number(albumID))
         setFilteredById(filteredAlbumID)
     };
 
     return (
-        <div>
+        <div className='wrapper'>
             <AlbumSelect
                 selectedValue={selectedValue}
                 handleChangeAlbumId={handleChangeAlbumId}
                 albumId={albumId}
             />
-            <div className="pagination_list">
-                <Pagination
-                    variant="outlined"
-                    shape="rounded"
-                    count={countPagesNumber}
-                    page={currentPage}
-                    onChange={(e, p) => handleChangePageNumber(e, p)}
+            {
+                filteredById.length !== 0 &&
+                <CustomPagination
+                    countPagesNumber={countPagesNumber}
+                    currentPage={currentPage}
+                    handleChangePageNumber={handleChangePageNumber}
                 />
-            </div>
+            }
             <Modal
                 modalActive={isOpen}
                 setModalActive={setIsOpen}
-                imgUrl={photoURL}
+                currentItem={currentItem}
             />
             <RenderPhoto
                 filteredById={filteredById}
                 currentPhotos={currentPhotos}
-                handleModalData={handleModalData}
+                handleModalData={openModal}
                 deletePhotoItem={deletePhotoItem}
                 selectedValue={selectedValue}
             />
@@ -108,5 +113,3 @@ function App() {
 }
 
 export default App;
-
-

@@ -1,13 +1,18 @@
 import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import React from "react";
+import "./albumSelect.css"
 
-type AlbumSelectP = {
-    selectedValue: number,
+type AlbumSelectPropsType = {
+    selectedValue: number | string,
     handleChangeAlbumId: (event: SelectChangeEvent) => void,
     albumId: number[],
 }
 
-function AlbumSelect({selectedValue, handleChangeAlbumId, albumId}: AlbumSelectP) {
+function AlbumSelect({
+                         selectedValue,
+                         handleChangeAlbumId,
+                         albumId
+                     }: AlbumSelectPropsType) {
     return (
         <div className='select_list'>
             <Box sx={{minWidth: 199}}>
@@ -22,7 +27,7 @@ function AlbumSelect({selectedValue, handleChangeAlbumId, albumId}: AlbumSelectP
                         label="Album ID"
                         onChange={handleChangeAlbumId}
                     >
-                        <MenuItem value={999999}>
+                        <MenuItem value={'ALL'}>
                             ALL
                         </MenuItem>
                         {albumId.map((id) =>
@@ -37,6 +42,4 @@ function AlbumSelect({selectedValue, handleChangeAlbumId, albumId}: AlbumSelectP
     )
 }
 
-
-// @ts-ignore
 export default AlbumSelect

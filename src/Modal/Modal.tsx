@@ -1,21 +1,21 @@
 import React from "react";
 import "../Modal/modal.css"
+import {AlbumApiType} from "../API/album-api";
 
 
-type ModalP = {
-    modalActive: boolean
-    setModalActive: (flag: boolean) => void
-    imgUrl?: string
+type ModalPropsType = {
+    modalActive: boolean,
+    setModalActive: (flag: boolean) => void,
+    currentItem: AlbumApiType | undefined,
 }
 
-function Modal({modalActive, setModalActive, imgUrl}: ModalP) {
+function Modal({modalActive, setModalActive, currentItem}: ModalPropsType) {
     return (
         <div className={modalActive ? 'modal active' : 'modal'} onClick={() => setModalActive(false)}>
-            <div className={modalActive ? 'modal__content active' : 'modal__content'}
-                 onClick={e => e.stopPropagation()}>
+            <div className={modalActive ? 'modal__content active' : 'modal__content'}>
                 <img
                     alt=''
-                    src={imgUrl}
+                    src={currentItem?.url}
                 />
             </div>
         </div>
